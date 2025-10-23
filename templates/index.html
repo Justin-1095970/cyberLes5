@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>encryption webapp</title>
 </head>
 <body>
+   <div class="container">
+       <h1>secure</h1>
 
+       <div class="mode-toggle">
+           <button id="encryptBtn" class="active">encrypt</button>
+           <button id="decryptBtn">decrypt</button>
+       </div>
+
+       <form id="encryptForm">
+           <div>
+               <label id="textLabel">encrypt this text: </label>
+               <textarea id="inputText" rows="5" required></textarea>
+           </div>
+
+       </form>
+
+   </div>
 </body>
 </html>
