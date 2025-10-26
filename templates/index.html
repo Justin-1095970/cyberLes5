@@ -35,9 +35,72 @@
     </form>
 
     <div id="decryptedResult" style="display:none">
-            <h3>decrypt tekst: </h3>
-            <textarea id="decryptedText" readonly></textarea>
+        <h3>decrypt tekst: </h3>
+        <textarea id="decryptedText" readonly></textarea>
     </div>
+
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('createKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/create-key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    keyName: document.getElementById('keyName').value,
+                    password: document.getElementById('password').value,
+                    masterPassword: document.getElementById('masterPassword').value
+                })
+            })
+            const data = await response.json()
+            document.getElementById('message').textContent = data.message
+        })
+
+        document.getElementById('encryptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/encrypt ', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    plaintext: document.getElementById('plaintext').value,
+                    encryptedKeyName: document.getElementById('encryptedKeyName').value,
+                    encryptedMasterPassword: document.getElementById('encryptedMasterPassword').value
+                })
+            })
+            const data = await response.json()
+            if (data.success) {
+                document.getElementById('encryptedText').value = data.result
+                document.getElementById('encryptedResult').style.display = 'block'
+            }
+            document.getElementById('message').textContent = data.message
+        })
+
+        document.getElementById('decryptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/decrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    decipherText: document.getElementById('decipherText').value,
+                    decryptedKeyName: document.getElementById('decryptedKeyName').value,
+                    decryptedMasterPassword: document.getElementById('decryptedMasterPassword').value
+                })
+            })
+            const data = await response.json()
+            if (data.success) {
+                document.getElementById('decryptedText').value = data.result
+                document.getElementById('decryptedResult').style.display = 'block'
+            }
+            document.getElementById('message').textContent = data.message
+        })
+    </script>
 
 </body>
 </html>
