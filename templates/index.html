@@ -6,38 +6,38 @@
     <link rel="stylesheet" href="{{ url_for('static' , filename='css/style.css') }}">
 </head>
 <body>
-   <div class="container">
-       <h1>secure</h1>
+   <h1>VERY SECURE TEXT ENCRYPTION!!!!!!!!!!</h1>
 
-       <div class="mode-toggle">
-           <button id="encryptBtn" class="active">encrypt</button>
-           <button id="decryptBtn">decrypt</button>
-       </div>
+    <form id="createKeyForm">
+        <input type="text" id="keyName" placeholder="name" required>
+        <input type="password" id="password" placeholder="password" required>
+        <input type="password" id="masterPassword" placeholder="masterPassword" required>
+        <button type="submit">create Key</button>
+    </form>
 
-       <form id="encryptForm">
-           <div>
-               <label id="textLabel">encrypt this text: </label>
-               <textarea id="inputText" rows="5" required></textarea>
-           </div>
+    <form id="encryptForm">
+        <textarea id="plaintext" placeholder="tekst om te versleuten" required></textarea>
+        <input type="text" id="encryptedKeyName" placeholder="key name" required>
+        <input type="password" id="encryptedMasterPassword" placeholder="maser password" required>
+        <button type="submit">encrypt</button>
+    </form>
 
-           <div>
-               <label>password: </label>
-               <input type="password" id="password" required>
-           </div>
+    <div id="encryptedResult" style="display:none">
+        <h3>encrypt tekst: </h3>
+        <textarea id="encryptedText" readonly></textarea>
+    </div>
 
-           <button type="submit" id="submitBtn">ecnrypt text</button>
-           <button type="button" id="clearBtn">clear</button>
-       </form>
+   <form id="decryptForm">
+        <textarea id="decipherText" placeholder="decrypted tekst" required></textarea>
+        <input type="text" id="decryptedKeyName" placeholder="key name" required>
+        <input type="password" id="decryptedMasterPassword" placeholder="maser password" required>
+        <button type="submit">decrypt</button>
+    </form>
 
-       <div id="resultSection" style="display: none">
-           <h3 id="resultTitle">result: </h3>
-           <div id="resultText"></div>
-           <button id="copyBtn">copy</button>
-       </div>
+    <div id="decryptedResult" style="display:none">
+            <h3>decrypt tekst: </h3>
+            <textarea id="decryptedText" readonly></textarea>
+    </div>
 
-       <div id="successAlert" style="display: none;"></div>
-       <div id="errorAlert" style="display: none;"></div>
-
-   </div>
 </body>
 </html>

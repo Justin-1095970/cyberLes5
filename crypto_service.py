@@ -6,6 +6,8 @@ import datetime
 import json
 import os
 
+
+
 class CryptoService:
     def __init__(self, key_storage_path="keys"):
         self.key_storage_path = key_storage_path
@@ -53,6 +55,25 @@ class CryptoService:
 
     def share_key(self, key_name, master_password, recipient_password):
         key = self.load_key(key_name, master_password)
+        salt = os.urandom(16)
+        key_recipient_password = self.generate_key(recipient_password, salt)
+
+        aegcm = AESGCM(key_recipient_password)
+        nonce = os.urandom(12)
+        encrypted_key = aegcm.encrypt(nonce, key, None)
+
+        package = {
+            'original_key_name': key_name,
+            'created_on': datetime.datetime.now().isoformat(),
+            'salt': base64.b64encode(salt).decode('utf-8'),
+            'nonce': base64.b64encode(nonce).decode('utf-8'),
+            'encrypted_key': base64.b64encode(encrypted_key).decode()
+        }
+
+        json_str = json.dumps(package)
+        package_b64 = base64.b64encode(json_str.encode())
+
+        return package_b64
 
 
 
