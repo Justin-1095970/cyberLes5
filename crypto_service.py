@@ -75,7 +75,44 @@ class CryptoService:
 
         return package_b64
 
+    def receive_key(self, package_b64, recipient_password, new_key_name, master_password):
+        package_str = base64.b64decode(package_b64).decode()
+        package = json.loads(package_str)
 
+        salt = base64.b64decode(package['salt'])
+        nonce = base64.b64decode(package['nonce'])
+        encrypted_key = base64.b64decode(package['encrypted_key'])
+
+        key_recipient_password = self.generate_key(recipient_password, salt)
+
+        aegcm = AESGCM(key_recipient_password)
+        key = aegcm.decrypt(nonce, encrypted_key, None)
+
+        key_info = self.save_key(new_key_name, key, master_password)
+
+        return {
+            'key_name': new_key_name,
+            'original_name': package.get('original_key_name'),
+            'imported_on': datetime.datetime.now().isoformat()
+        }
+
+
+    def encrypt(self, text, key):
+        aegcm = AESGCM(key)
+        nonce = os.urandom(12)
+        cipherText = aegcm.encrypt(nonce, text.encode('utf-8'), None)
+
+        combined = nonce + cipherText
+        return base64.b64encode(combined).decode('utf-8')
+
+    def decrypt(self, encrypted_b64, key):
+        combined = base64.b64decode(encrypted_b64)
+        nonce = combined[:12]
+        cipherText = combined[12:]
+
+        aegcm = AESGCM(key)
+        text = aegcm.decrypt(nonce, cipherText, None)
+        return text.decode('utf-8')
 
     def generate_key(self, password, salt):
         kdf = PBKDF2HMAC(
