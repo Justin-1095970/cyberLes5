@@ -39,6 +39,14 @@
         <textarea id="decryptedText" readonly></textarea>
     </div>
 
+   <form id="importKeyForm">
+       <textarea id="importPackage" placeholder="import key" required></textarea>
+       <input type="password" id="importRPassword" placeholder="receip password" required>
+       <input type="text" id="importKeyName" placeholder="key name" required>
+       <input type="password" id="importMasterPassword" placeholder="maser password" required>
+       <button type="submit">import key</button>
+   </form>
+
     <div id="message"></div>
 
     <script>
@@ -100,6 +108,51 @@
             }
             document.getElementById('message').textContent = data.message
         })
+
+        document.getElementById('shareKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/share-key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    keyName: document.getElementById('shareKeyName').value,
+                    password: document.getElementById('password').value,
+                    recipient_password: document.getElementById('recipientPassword').value
+                })
+            })
+            const data = await response.json()
+            if (data.success) {
+                document.getElementById('sharePackage').value = data.result
+                document.getElementById('shareResult').style.display = 'block'
+            }
+            document.getElementById('message').textContent = data.message
+        })
+
+        document.getElementById('importKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/api/import-key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    package: document.getElementById('importPackage').value,
+                    R_Password: document.getElementById('importRPassword').value,
+                    new_key_name: document.getElementById('importNewKeyName').value,
+                    master_password: document.getElementById('importMasterPassword').value,
+                })
+            })
+            const data = await response.json()
+            document.getElementById('message').textContent = data.message
+        })
+
+        function copyPackage() {
+            const text = document.getElementById('sharePackage').value
+            navigator.clipboard.writeText(text)
+        }
+
     </script>
 
 </body>
