@@ -71,7 +71,7 @@ class CryptoService:
         }
 
         json_str = json.dumps(package)
-        package_b64 = base64.b64encode(json_str.encode())
+        package_b64 = base64.b64encode(json_str.encode()).decode()
 
         return package_b64
 

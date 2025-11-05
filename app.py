@@ -59,11 +59,19 @@ def encrypt_text():
 def decrypt_text():
     try:
         data = request.get_json()
-        encrypted_text = data.get('encrypted_text', '').strip()
+        print('received data:', data)
+
+        encrypted_text = data.get('text', '').strip()
         key_name = data.get('key_name', '').strip()
         master_password = data.get('master_password', '').strip()
 
+        print(f"encrypted_text: '{encrypted_text}'")
+        print(f"key_name: '{key_name}'")
+        print(f"master_password: '{master_password}'")
+
+
         if not all([encrypted_text, key_name, master_password]):
+            print('validation failed')
             return jsonify({'error': 'fill all fields.'}), 400
 
         key = crypto.load_key(key_name, master_password)
@@ -75,6 +83,7 @@ def decrypt_text():
             'message': 'decrypted tekst'
         })
     except Exception as e:
+        print(f"error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/share-key', methods=['POST'])

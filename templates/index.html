@@ -17,8 +17,8 @@
 
     <form id="encryptForm">
         <textarea id="plaintext" placeholder="tekst om te versleuten" required></textarea>
-        <input type="text" id="encryptedKeyName" placeholder="key name" required>
-        <input type="password" id="encryptedMasterPassword" placeholder="maser password" required>
+        <input type="text" id="encKeyName" placeholder="key name" required>
+        <input type="password" id="encMasterPassword" placeholder="maser password" required>
         <button type="submit">encrypt</button>
     </form>
 
@@ -28,9 +28,9 @@
     </div>
 
    <form id="decryptForm">
-        <textarea id="decipherText" placeholder="decrypted tekst" required></textarea>
-        <input type="text" id="decryptedKeyName" placeholder="key name" required>
-        <input type="password" id="decryptedMasterPassword" placeholder="maser password" required>
+        <textarea id="ciphertext" placeholder="decrypted tekst" required></textarea>
+        <input type="text" id="decKeyName" placeholder="key name" required>
+        <input type="password" id="decMasterPassword" placeholder="maser password" required>
         <button type="submit">decrypt</button>
     </form>
 
@@ -49,13 +49,13 @@
    <div id="shareResult" style="display:none">
        <h3>share package: </h3>
        <textarea id="sharePackage" readonly></textarea>
-       <button onclick="copyPackage()">copy</button>
+       <button onclick="copyPackage()">copy package</button>
    </div>
 
    <form id="importKeyForm">
        <textarea id="importPackage" placeholder="import key" required></textarea>
-       <input type="password" id="importRPassword" placeholder="receip password" required>
-       <input type="text" id="importKeyName" placeholder="key name" required>
+       <input type="password" id="importRecipientPassword" placeholder="receip password" required>
+       <input type="text" id="importNewKeyName" placeholder="key name" required>
        <input type="password" id="importMasterPassword" placeholder="maser password" required>
        <button type="submit">import key</button>
    </form>
@@ -89,8 +89,8 @@
                 },
                 body: JSON.stringify({
                     text: document.getElementById('plaintext').value,
-                    key_name: document.getElementById('encryptedKeyName').value,
-                    master_password: document.getElementById('encryptedMasterPassword').value
+                    key_name: document.getElementById('encKeyName').value,
+                    master_password: document.getElementById('encMasterPassword').value
                 })
             })
             const data = await response.json()
@@ -103,18 +103,27 @@
 
         document.getElementById('decryptForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const payload = {
+                text: document.getElementById('ciphertext').value,
+                key_name: document.getElementById('decKeyName').value,
+                master_password: document.getElementById('decMasterPassword').value
+            };
+
+            console.log('Sending decrypt request with:', payload);
+
             const response = await fetch('/api/decrypt', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    text: document.getElementById('ciphertext').value,
-                    decryptedKeyName: document.getElementById('decKeyName').value,
-                    decryptedMasterPassword: document.getElementById('decMasterPassword').value
-                })
+                body: JSON.stringify(payload)
             })
+
+            console.log('received response:', response.status);
             const data = await response.json()
+            console.log('received data:', data);
+
             if (data.success) {
                 document.getElementById('decryptedText').value = data.result
                 document.getElementById('decryptedResult').style.display = 'block'
@@ -130,14 +139,14 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    keyName: document.getElementById('shareKeyName').value,
-                    password: document.getElementById('password').value,
+                    key_name: document.getElementById('shareKeyName').value,
+                    master_password: document.getElementById('shareMasterPassword').value,
                     recipient_password: document.getElementById('recipientPassword').value
                 })
             })
             const data = await response.json()
             if (data.success) {
-                document.getElementById('sharePackage').value = data.result
+                document.getElementById('sharePackage').value = data.package
                 document.getElementById('shareResult').style.display = 'block'
             }
             document.getElementById('message').textContent = data.message || data.error
@@ -152,7 +161,7 @@
                 },
                 body: JSON.stringify({
                     package: document.getElementById('importPackage').value,
-                    R_Password: document.getElementById('importRPassword').value,
+                    recipient_password: document.getElementById('importRecipientPassword').value,
                     new_key_name: document.getElementById('importNewKeyName').value,
                     master_password: document.getElementById('importMasterPassword').value,
                 })
